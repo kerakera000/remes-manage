@@ -2,15 +2,30 @@ import React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
+  Repeat,
+  Settings,
+  type LucideIcon,
+} from "lucide-react";
+
+interface MenuItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+}
 
 function Sidebar() {
-  const menuItems = [
-    { href: "/dashboard", label: "ダッシュボード" },
-    { href: "/dashboard/products", label: "商品管理" },
-    { href: "/dashboard/orders", label: "注文管理" },
-    { href: "/dashboard/customers", label: "顧客管理" },
-    { href: "/dashboard/subscriptions", label: "サブスクリプション管理" },
-    { href: "/dashboard/settings", label: "設定" },
+  const menuItems: MenuItem[] = [
+    { href: "/dashboard", label: "ダッシュボード", icon: LayoutDashboard },
+    { href: "/dashboard/products", label: "商品管理", icon: Package },
+    { href: "/dashboard/orders", label: "注文管理", icon: ShoppingCart },
+    { href: "/dashboard/customers", label: "顧客管理", icon: Users },
+    { href: "/dashboard/subscriptions", label: "サブスクリプション管理", icon: Repeat },
+    { href: "/dashboard/settings", label: "設定", icon: Settings },
   ];
 
   return (
@@ -26,7 +41,10 @@ function Sidebar() {
             className="w-full justify-start"
             asChild
           >
-            <Link href={item.href}>{item.label}</Link>
+            <Link href={item.href} className="flex items-center gap-2">
+              <item.icon className="h-4 w-4" />
+              {item.label}
+            </Link>
           </Button>
         ))}
       </nav>
