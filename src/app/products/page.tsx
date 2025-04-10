@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { mockProducts, productStatuses, type Product } from "./data"; // Mock data
+import { AddProductDialog } from "@/components/products/add-product-dialog";
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY" }).format(amount);
@@ -41,7 +42,7 @@ export default function ProductsPage() {
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">商品管理</h1>
-        <Button>商品を追加</Button> {/* Add Product Button */}
+        <AddProductDialog />
       </div>
 
       <div className="rounded-md border">
