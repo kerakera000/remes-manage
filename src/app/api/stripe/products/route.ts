@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import stripe from '@/lib/stripe';
 import type { CreateProductRequest } from './types';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const products = await stripe.products.list({
