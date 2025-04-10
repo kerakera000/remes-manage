@@ -21,10 +21,19 @@ export function AddProductDialog() {
         body: JSON.stringify({
           name: values.name,
           description: values.description,
-          price: values.price,
           active: values.status === 'active',
-          interval: values.interval,
-          intervalCount: values.intervalCount,
+          monthlyPlan: {
+            price: values.monthlyPlan.price,
+            active: values.monthlyPlan.active,
+          },
+          sixMonthPlan: {
+            price: values.sixMonthPlan.price,
+            active: values.sixMonthPlan.active,
+          },
+          yearlyPlan: {
+            price: values.yearlyPlan.price,
+            active: values.yearlyPlan.active,
+          },
           metadata: {
             stock: values.stock,
             status: values.status,
@@ -50,7 +59,7 @@ export function AddProductDialog() {
       <DialogTrigger asChild>
         <Button>商品を追加</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>商品を追加</DialogTitle>
         </DialogHeader>

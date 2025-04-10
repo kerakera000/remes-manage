@@ -52,9 +52,16 @@ export async function POST(request: Request) {
   try {
     const body = await request.json() as CreateProductRequest;
     
-    if (!body.name || !body.price || !body.interval) {
+    if (!body.name) {
       return NextResponse.json(
-        { error: '商品名、価格、サブスクリプション間隔は必須です' }, 
+        { error: '商品名は必須です' }, 
+        { status: 400 }
+      );
+    }
+
+    if (!body.monthlyPlan.active && !body.sixMonthPlan.active && !body.yearlyPlan.active) {
+      return NextResponse.json(
+        { error: '少なくとも1つのサブスクリプションプランを有効にしてください' }, 
         { status: 400 }
       );
     }
@@ -67,30 +74,70 @@ export async function POST(request: Request) {
       metadata: body.metadata,
     });
 
-    const price = await stripe.prices.create({
-      product: product.id,
-      unit_amount: body.price,
-      currency: 'jpy',
-      recurring: {
-        interval: body.interval,
-        interval_count: body.intervalCount || 1,
-      },
-    });
+    const prices = [];
+
+    if (body.monthlyPlan.active && body.monthlyPlan.price > 0) {
+      const monthlyPrice = await stripe.prices.create({
+        product: product.id,
+        unit_amount: body.monthlyPlan.price,
+        currency: 'jpy',
+        recurring: {
+          interval: 'month',
+          interval_count: 1,
+        },
+        metadata: {
+          plan_type: 'monthly',
+        },
+      });
+      prices.push(monthlyPrice);
+    }
+
+    if (body.sixMonthPlan.active && body.sixMonthPlan.price > 0) {
+      const sixMonthPrice = await stripe.prices.create({
+        product: product.id,
+        unit_amount: body.sixMonthPlan.price,
+        currency: 'jpy',
+        recurring: {
+          interval: 'month',
+          interval_count: 6,
+        },
+        metadata: {
+          plan_type: 'six_month',
+        },
+      });
+      prices.push(sixMonthPrice);
+    }
+
+    if (body.yearlyPlan.active && body.yearlyPlan.price > 0) {
+      const yearlyPrice = await stripe.prices.create({
+        product: product.id,
+        unit_amount: body.yearlyPlan.price,
+        currency: 'jpy',
+        recurring: {
+          interval: 'year',
+          interval_count: 1,
+        },
+        metadata: {
+          plan_type: 'yearly',
+        },
+      });
+      prices.push(yearlyPrice);
+    }
 
     return NextResponse.json({
       id: product.id,
       name: product.name,
       description: product.description,
       active: product.active,
-      price: {
+      prices: prices.map(price => ({
         id: price.id,
         unit_amount: price.unit_amount,
         recurring: {
-          interval: body.interval,
-          interval_count: body.intervalCount || 1,
+          interval: price.recurring?.interval,
+          interval_count: price.recurring?.interval_count,
         },
-      },
-      images: product.images,
+        metadata: price.metadata,
+      })),
       metadata: product.metadata,
     }, { status: 201 });
     
