@@ -23,6 +23,8 @@ export function AddProductDialog() {
           description: values.description,
           price: values.price,
           active: values.status === 'active',
+          interval: values.interval,
+          intervalCount: values.intervalCount,
           metadata: {
             stock: values.stock,
             status: values.status,
