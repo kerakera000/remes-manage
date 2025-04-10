@@ -27,6 +27,10 @@ const productFormSchema = z.object({
   status: z.enum(["active", "draft", "archived"], {
     required_error: "ステータスを選択してください",
   }),
+  interval: z.enum(["day", "week", "month", "year"], {
+    required_error: "サブスクリプション間隔を選択してください",
+  }),
+  intervalCount: z.coerce.number().min(1, { message: "間隔の回数は1以上で入力してください" }),
 })
 
 type ProductFormValues = z.infer<typeof productFormSchema>
@@ -45,6 +49,8 @@ export function AddProductForm({ onSubmit, onCancel }: {
       price: 0,
       stock: 0,
       status: "draft",
+      interval: "month",
+      intervalCount: 1,
     },
   })
 
@@ -146,6 +152,46 @@ export function AddProductForm({ onSubmit, onCancel }: {
                 </SelectContent>
               </Select>
               <FormDescription>商品の現在のステータスを選択してください</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="interval"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>サブスクリプション間隔</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="間隔を選択" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="day">日</SelectItem>
+                  <SelectItem value="week">週</SelectItem>
+                  <SelectItem value="month">月</SelectItem>
+                  <SelectItem value="year">年</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription>サブスクリプションの請求間隔を選択してください</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="intervalCount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>間隔の回数</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="1" {...field} />
+              </FormControl>
+              <FormDescription>間隔の回数を入力してください（例：2週間なら「2」）</FormDescription>
               <FormMessage />
             </FormItem>
           )}

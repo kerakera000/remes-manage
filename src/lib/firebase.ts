@@ -4,13 +4,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBar2zYk1BlKkli8lFxJPD1lISpVUglhto",
-    authDomain: "remesdatabase.firebaseapp.com",
-    projectId: "remesdatabase",
-    storageBucket: "remesdatabase.firebasestorage.app",
-    messagingSenderId: "354661121509",
-    appId: "1:354661121509:web:bd2b7c3713fea2c177430c",
-    measurementId: "G-N0CG5WJQZP"
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Firebaseの初期化
