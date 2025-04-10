@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 async function isAuthenticated(request: NextRequest): Promise<boolean> {
-  return request.cookies.has('auth-token-placeholder'); // Replace 'auth-token-placeholder'
+  return request.cookies.has('auth-session'); // Check for the session cookie set on login
 }
 
 export async function middleware(request: NextRequest) {
