@@ -34,6 +34,7 @@ const productFormSchema = z.object({
   }),
   monthlyPlan: planSchema,
   sixMonthPlan: planSchema,
+  twelveMonthPlan: planSchema, // 追加: 12ヶ月プラン
   yearlyPlan: planSchema,
 })
 
@@ -57,6 +58,10 @@ export function AddProductForm({ onSubmit, onCancel }: {
         active: true,
       },
       sixMonthPlan: {
+        price: 0,
+        active: false,
+      },
+      twelveMonthPlan: { // 追加: 12ヶ月プラン
         price: 0,
         active: false,
       },
@@ -237,6 +242,50 @@ export function AddProductForm({ onSubmit, onCancel }: {
                   <Input type="number" placeholder="5000" {...field} />
                 </FormControl>
                 <FormDescription>6ヶ月あたりの価格を円単位で入力してください</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* 12ヶ月プラン */}
+        <div className="space-y-4 rounded-lg border p-4">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            <h3 className="text-lg font-medium">12ヶ月プラン</h3>
+          </div>
+          
+          <FormField
+            control={form.control as any}
+            name="twelveMonthPlan.active"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>有効にする</FormLabel>
+                  <FormDescription>
+                    このプランを有効にするかどうかを選択してください
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control as any}
+            name="twelveMonthPlan.price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>価格（円/12ヶ月）</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="10000" {...field} />
+                </FormControl>
+                <FormDescription>12ヶ月あたりの価格を円単位で入力してください</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

@@ -30,6 +30,10 @@ export function AddProductDialog() {
             price: values.sixMonthPlan.price,
             active: values.sixMonthPlan.active,
           },
+          twelveMonthPlan: {
+            price: values.twelveMonthPlan.price,
+            active: values.twelveMonthPlan.active,
+          },
           yearlyPlan: {
             price: values.yearlyPlan.price,
             active: values.yearlyPlan.active,
