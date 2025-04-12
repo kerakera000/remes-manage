@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!body.monthlyPlan.active && !body.sixMonthPlan.active && !body.yearlyPlan.active) {
+    if (!body.monthlyPlan.active && !body.sixMonthPlan.active && !body.twelveMonthPlan.active && !body.yearlyPlan.active) {
       return NextResponse.json(
         { error: '少なくとも1つのサブスクリプションプランを有効にしてください' }, 
         { status: 400 }
@@ -85,6 +85,11 @@ export async function POST(request: Request) {
           interval: 'month',
           interval_count: 1,
         },
+        billing_scheme: 'per_unit',
+        transform_quantity: {
+          divide_by: 6,
+          round: 'up',
+        },
         metadata: {
           plan_type: 'monthly',
         },
@@ -101,11 +106,37 @@ export async function POST(request: Request) {
           interval: 'month',
           interval_count: 6,
         },
+        billing_scheme: 'per_unit',
+        transform_quantity: {
+          divide_by: 6,
+          round: 'up',
+        },
         metadata: {
           plan_type: 'six_month',
         },
       });
       prices.push(sixMonthPrice);
+    }
+
+    if (body.twelveMonthPlan.active && body.twelveMonthPlan.price > 0) {
+      const twelveMonthPrice = await stripe.prices.create({
+        product: product.id,
+        unit_amount: body.twelveMonthPlan.price,
+        currency: 'jpy',
+        recurring: {
+          interval: 'month',
+          interval_count: 12,
+        },
+        billing_scheme: 'per_unit',
+        transform_quantity: {
+          divide_by: 6,
+          round: 'up',
+        },
+        metadata: {
+          plan_type: 'twelve_month',
+        },
+      });
+      prices.push(twelveMonthPrice);
     }
 
     if (body.yearlyPlan.active && body.yearlyPlan.price > 0) {
@@ -116,6 +147,11 @@ export async function POST(request: Request) {
         recurring: {
           interval: 'year',
           interval_count: 1,
+        },
+        billing_scheme: 'per_unit',
+        transform_quantity: {
+          divide_by: 6,
+          round: 'up',
         },
         metadata: {
           plan_type: 'yearly',
