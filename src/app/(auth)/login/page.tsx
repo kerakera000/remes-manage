@@ -26,16 +26,26 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  
+  const getReturnUrl = () => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      return searchParams.get('returnUrl') || '/';
+    }
+    return '/';
+  };
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
     setLoading(true);
+    
+    const returnUrl = getReturnUrl();
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/'); // Redirect to dashboard on successful login
       Cookies.set('auth-session', 'true', { expires: 1 }); // Set session cookie
+      router.push(returnUrl); // Redirect to original URL or home page
 
     } catch (err: any) {
       console.error("Login failed:", err);

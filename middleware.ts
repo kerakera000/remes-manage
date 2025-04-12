@@ -17,7 +17,9 @@ export async function middleware(request: NextRequest) {
      if (pathname.startsWith('/_next/') || pathname.startsWith('/static/') || pathname.includes('.')) {
        return NextResponse.next();
      }
-    return NextResponse.redirect(new URL('/login', request.url));
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('returnUrl', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();

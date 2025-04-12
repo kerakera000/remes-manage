@@ -40,8 +40,8 @@ function Sidebar() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      Cookies.remove('auth-session'); // Remove the correct session cookie
-      window.location.href = '/login'; // Use window.location for full page reload redirect
+      Cookies.remove('auth-session'); // Remove the session cookie
+      window.location.href = '/login'; // Redirect to login page
     } catch (error) {
       console.error("Error signing out: ", error);
     }

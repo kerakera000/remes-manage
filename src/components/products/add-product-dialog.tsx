@@ -1,17 +1,40 @@
 "use client"
 
 import * as React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { AddProductForm } from "@/components/features/products/add-product-form"
 import { useRouter } from "next/navigation"
+import { auth } from '@/lib/firebase'
+import { onAuthStateChanged } from 'firebase/auth'
+import Cookies from 'js-cookie'
 
 export function AddProductDialog() {
   const [open, setOpen] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const router = useRouter()
+  
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true)
+        Cookies.set('auth-session', 'true', { expires: 1 })
+      } else {
+        setIsAuthenticated(false)
+        Cookies.remove('auth-session')
+      }
+    })
+    
+    return () => unsubscribe()
+  }, [])
 
   const handleSubmit = async (values: any) => {
+    if (!isAuthenticated) {
+      router.push('/login?returnUrl=/products');
+      return;
+    }
+    
     try {
       const response = await fetch('/api/stripe/products', {
         method: 'POST',
