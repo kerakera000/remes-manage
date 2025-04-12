@@ -135,7 +135,7 @@ export default async function ProductsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>アクション</DropdownMenuLabel>
+                          <DropdownMenuLabel>アクションズ</DropdownMenuLabel>
                           <DropdownMenuItem
                             onClick={() => navigator.clipboard.writeText(product.id)}
                           >
