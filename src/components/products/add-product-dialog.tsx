@@ -21,10 +21,12 @@ export function AddProductDialog() {
         body: JSON.stringify({
           name: values.name,
           description: values.description,
-          price: values.price,
           active: values.status === 'active',
-          interval: values.interval,
-          intervalCount: values.intervalCount,
+          plans: values.plans.map((plan: any) => ({
+            price: plan.price,
+            interval: plan.interval,
+            intervalCount: plan.intervalCount,
+          })),
           metadata: {
             stock: values.stock,
             status: values.status,

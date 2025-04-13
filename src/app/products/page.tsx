@@ -88,8 +88,8 @@ export default async function ProductsPage() {
               </TableHead>
               <TableHead>商品名</TableHead>
               <TableHead>ステータス</TableHead>
-              <TableHead className="text-right">価格</TableHead>
-              <TableHead>サブスクリプション</TableHead>
+              <TableHead className="text-right">基本価格</TableHead>
+              <TableHead>プラン情報</TableHead>
               <TableHead className="text-right">在庫数</TableHead>
               <TableHead>作成日</TableHead>
               <TableHead className="w-[50px]">
@@ -117,10 +117,19 @@ export default async function ProductsPage() {
                     </TableCell>
                     <TableCell className="text-right">{formatCurrency(product.price)}</TableCell>
                     <TableCell>
-                      {product.recurring && (
+                      {product.prices && product.prices.length > 0 ? (
+                        <div className="space-y-1">
+                          {product.prices.map((price: any, index: number) => (
+                            <Badge key={price.id} variant="secondary" className="flex items-center gap-1 mb-1">
+                              <Calendar className="h-3 w-3" />
+                              {formatRecurring(price.recurring)} - {formatCurrency(price.unit_amount)}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : product.recurring && (
                         <Badge variant="secondary" className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {formatRecurring(product.recurring)}
+                          {formatRecurring(product.recurring)} - {formatCurrency(product.price)}
                         </Badge>
                       )}
                     </TableCell>
