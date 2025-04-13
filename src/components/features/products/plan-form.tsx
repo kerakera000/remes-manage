@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useId } from "react"
+import { Control } from "react-hook-form"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
@@ -15,14 +15,15 @@ import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 
 export interface PlanFormProps {
-  form: any;
+  form: {
+    control: Control<Record<string, unknown>>;
+  };
   index: number;
   onRemove: () => void;
   isRemoveDisabled: boolean;
 }
 
 export function PlanForm({ form, index, onRemove, isRemoveDisabled }: PlanFormProps) {
-  const id = useId()
   
   return (
     <div className="border p-4 rounded-md mb-4 relative">

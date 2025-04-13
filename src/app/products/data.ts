@@ -1,5 +1,14 @@
 import { type LucideIcon, Package, PackageCheck, PackageX } from "lucide-react";
 
+export interface PriceInfo {
+  id: string;
+  unit_amount: number;
+  recurring: {
+    interval: string;
+    interval_count: number;
+  } | null;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -7,6 +16,11 @@ export interface Product {
   stock: number;
   status: "active" | "draft" | "archived";
   createdAt: Date;
+  recurring?: {
+    interval: string;
+    interval_count: number;
+  } | null;
+  prices?: PriceInfo[];
 }
 
 export const productStatuses: { value: Product["status"]; label: string; icon: LucideIcon }[] = [

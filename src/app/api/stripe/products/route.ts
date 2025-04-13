@@ -91,8 +91,6 @@ export async function POST(request: Request) {
       )
     );
 
-    const defaultPrice = prices[0];
-
     return NextResponse.json({
       id: product.id,
       name: product.name,
