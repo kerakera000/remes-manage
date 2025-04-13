@@ -78,17 +78,22 @@ export async function POST(request: Request) {
     });
 
     const prices = await Promise.all(
-      body.plans.map(plan => 
-        stripe.prices.create({
+      body.plans.map(plan => {
+        const priceData: any = {
           product: product.id,
           unit_amount: plan.price,
           currency: 'jpy',
-          recurring: {
+        };
+        
+        if (plan.type === 'subscription' && plan.interval) {
+          priceData.recurring = {
             interval: plan.interval,
-            interval_count: plan.intervalCount || 1,
-          },
-        })
-      )
+            interval_count: 1,
+          };
+        }
+        
+        return stripe.prices.create(priceData);
+      })
     );
 
     return NextResponse.json({

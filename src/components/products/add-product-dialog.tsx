@@ -11,17 +11,7 @@ export function AddProductDialog() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (values: {
-    name: string;
-    description?: string;
-    stock: number;
-    status: string;
-    plans: Array<{
-      price: number;
-      interval: string;
-      intervalCount: number;
-    }>;
-  }) => {
+  const handleSubmit = async (values: any) => {
     try {
       const response = await fetch('/api/stripe/products', {
         method: 'POST',
@@ -32,10 +22,10 @@ export function AddProductDialog() {
           name: values.name,
           description: values.description,
           active: values.status === 'active',
-          plans: values.plans.map((plan) => ({
+          plans: values.plans.map((plan: any) => ({
             price: plan.price,
-            interval: plan.interval,
-            intervalCount: plan.intervalCount,
+            type: plan.type,
+            interval: plan.type === 'subscription' ? plan.interval : undefined,
           })),
           metadata: {
             stock: values.stock,

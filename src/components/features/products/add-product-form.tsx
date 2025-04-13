@@ -22,10 +22,12 @@ import { PlanForm } from "./plan-form"
 
 const planSchema = z.object({
   price: z.coerce.number().min(1, { message: "価格は1円以上で入力してください" }),
+  type: z.enum(["one_time", "subscription"], {
+    required_error: "プランタイプを選択してください",
+  }),
   interval: z.enum(["day", "week", "month", "year"], {
     required_error: "サブスクリプション間隔を選択してください",
-  }),
-  intervalCount: z.coerce.number().min(1, { message: "間隔の回数は1以上で入力してください" }),
+  }).optional().nullable(),
 })
 
 const productFormSchema = z.object({
@@ -56,8 +58,8 @@ export function AddProductForm({ onSubmit, onCancel }: {
       plans: [
         {
           price: 0,
+          type: "subscription",
           interval: "month",
-          intervalCount: 1,
         }
       ],
     },
@@ -178,8 +180,8 @@ export function AddProductForm({ onSubmit, onCancel }: {
             onClick={() => {
               append({
                 price: 0,
+                type: "subscription",
                 interval: "month",
-                intervalCount: 1,
               });
             }}
           >

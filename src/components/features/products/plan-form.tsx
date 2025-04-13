@@ -15,9 +15,7 @@ import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 
 export interface PlanFormProps {
-  form: {
-    control: Control<Record<string, unknown>>;
-  };
+  form: any;
   index: number;
   onRemove: () => void;
   isRemoveDisabled: boolean;
@@ -61,46 +59,56 @@ export function PlanForm({ form, index, onRemove, isRemoveDisabled }: PlanFormPr
       <div className="mt-4">
         <FormField
           control={form.control}
-          name={`plans.${index}.interval`}
+          name={`plans.${index}.type`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>サブスクリプション間隔</FormLabel>
+              <FormLabel>プランタイプ</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="間隔を選択" />
+                    <SelectValue placeholder="タイプを選択" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="day">日</SelectItem>
-                  <SelectItem value="week">週</SelectItem>
-                  <SelectItem value="month">月</SelectItem>
-                  <SelectItem value="year">年</SelectItem>
+                  <SelectItem value="one_time">単発購入</SelectItem>
+                  <SelectItem value="subscription">サブスクリプション</SelectItem>
                 </SelectContent>
               </Select>
-              <FormDescription>サブスクリプションの請求間隔を選択してください</FormDescription>
+              <FormDescription>単発購入かサブスクリプションかを選択してください</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
       </div>
       
-      <div className="mt-4">
-        <FormField
-          control={form.control}
-          name={`plans.${index}.intervalCount`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>間隔の回数</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="1" {...field} />
-              </FormControl>
-              <FormDescription>間隔の回数を入力してください（例：2週間なら「2」）</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      {form.watch(`plans.${index}.type`) === "subscription" && (
+        <div className="mt-4">
+          <FormField
+            control={form.control}
+            name={`plans.${index}.interval`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>サブスクリプション間隔</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="間隔を選択" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="day">日</SelectItem>
+                    <SelectItem value="week">週</SelectItem>
+                    <SelectItem value="month">月</SelectItem>
+                    <SelectItem value="year">年</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>サブスクリプションの請求間隔を選択してください</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
     </div>
   )
 }

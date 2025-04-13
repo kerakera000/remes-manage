@@ -1,7 +1,7 @@
 export interface PlanRequest {
   price: number; // 円単位
-  interval: 'day' | 'week' | 'month' | 'year'; // サブスクリプションの間隔
-  intervalCount?: number; // 間隔の回数（例：2週間なら interval='week', intervalCount=2）
+  type: 'one_time' | 'subscription'; // 単発購入かサブスクリプションか
+  interval?: 'day' | 'week' | 'month' | 'year'; // サブスクリプションの間隔（サブスクリプションの場合のみ）
 }
 
 export interface CreateProductRequest {
