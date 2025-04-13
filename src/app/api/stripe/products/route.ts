@@ -74,7 +74,7 @@ export async function POST(request: Request) {
       description: body.description,
       active: body.active,
       images: body.images,
-      metadata: body.metadata,
+      metadata: body.metadata as Record<string, string>,
     });
 
     const prices = await Promise.all(
