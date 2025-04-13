@@ -21,10 +21,12 @@ export function AddProductDialog() {
         body: JSON.stringify({
           name: values.name,
           description: values.description,
-          price: values.price,
           active: values.status === 'active',
-          interval: values.interval,
-          intervalCount: values.intervalCount,
+          plans: values.plans.map((plan: any) => ({
+            price: plan.price,
+            type: plan.type,
+            interval: plan.type === 'subscription' ? plan.interval : undefined,
+          })),
           metadata: {
             stock: values.stock,
             status: values.status,
@@ -50,7 +52,7 @@ export function AddProductDialog() {
       <DialogTrigger asChild>
         <Button>商品を追加</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>商品を追加</DialogTitle>
         </DialogHeader>

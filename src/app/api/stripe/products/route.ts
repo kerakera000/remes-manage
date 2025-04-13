@@ -18,22 +18,32 @@ export async function GET() {
           active: true,
           expand: ['data.product'],
         });
+        
+        const formattedPrices = prices.data.map(price => ({
+          id: price.id,
+          unit_amount: price.unit_amount || 0,
+          recurring: price.recurring ? {
+            interval: price.recurring.interval,
+            interval_count: price.recurring.interval_count,
+          } : null,
+        }));
 
-        const price = prices.data[0];
+        const defaultPrice = prices.data[0];
         
         return {
           id: product.id,
           name: product.name,
           description: product.description,
           active: product.active,
-          price: price ? price.unit_amount || 0 : 0,
+          price: defaultPrice ? defaultPrice.unit_amount || 0 : 0, // 後方互換性のため
           stock: product.metadata?.stock ? parseInt(product.metadata.stock) : 0,
           status: product.metadata?.status || (product.active ? 'active' : 'draft'),
           createdAt: new Date(product.created * 1000),
-          recurring: price?.recurring ? {
-            interval: price.recurring.interval,
-            interval_count: price.recurring.interval_count,
+          recurring: defaultPrice?.recurring ? {
+            interval: defaultPrice.recurring.interval,
+            interval_count: defaultPrice.recurring.interval_count,
           } : null,
+          prices: formattedPrices, // すべてのプラン情報
         };
       })
     );
@@ -52,9 +62,9 @@ export async function POST(request: Request) {
   try {
     const body = await request.json() as CreateProductRequest;
     
-    if (!body.name || !body.price || !body.interval) {
+    if (!body.name || !body.plans.length) {
       return NextResponse.json(
-        { error: '商品名、価格、サブスクリプション間隔は必須です' }, 
+        { error: '商品名およびプランは必須です' }, 
         { status: 400 }
       );
     }
@@ -64,32 +74,41 @@ export async function POST(request: Request) {
       description: body.description,
       active: body.active,
       images: body.images,
-      metadata: body.metadata,
+      metadata: body.metadata as Record<string, string>,
     });
 
-    const price = await stripe.prices.create({
-      product: product.id,
-      unit_amount: body.price,
-      currency: 'jpy',
-      recurring: {
-        interval: body.interval,
-        interval_count: body.intervalCount || 1,
-      },
-    });
+    const prices = await Promise.all(
+      body.plans.map(plan => {
+        const priceData: any = {
+          product: product.id,
+          unit_amount: plan.price,
+          currency: 'jpy',
+        };
+        
+        if (plan.type === 'subscription' && plan.interval) {
+          priceData.recurring = {
+            interval: plan.interval,
+            interval_count: 1,
+          };
+        }
+        
+        return stripe.prices.create(priceData);
+      })
+    );
 
     return NextResponse.json({
       id: product.id,
       name: product.name,
       description: product.description,
       active: product.active,
-      price: {
+      prices: prices.map(price => ({
         id: price.id,
         unit_amount: price.unit_amount,
         recurring: {
-          interval: body.interval,
-          interval_count: body.intervalCount || 1,
+          interval: price.recurring?.interval,
+          interval_count: price.recurring?.interval_count || 1,
         },
-      },
+      })),
       images: product.images,
       metadata: product.metadata,
     }, { status: 201 });
