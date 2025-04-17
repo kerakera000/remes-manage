@@ -30,6 +30,7 @@ export function AddProductDialog() {
           metadata: {
             stock: values.stock,
             status: values.status,
+            categories: values.categories.join(','), // カンマ区切りの文字列に変換
           },
         }),
       })

@@ -12,6 +12,8 @@ export interface CreateProductRequest {
   plans: PlanRequest[]; // 複数のプランをサポート
   metadata?: {
     stock?: number;
+    status?: string;
+    categories?: string; // カンマ区切りの文字列として保存
     [key: string]: unknown;
   };
 }

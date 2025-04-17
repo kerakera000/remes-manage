@@ -10,7 +10,8 @@ import { Plus } from "lucide-react"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { productStatuses } from "@/app/products/data"
+import { Checkbox } from "@/components/ui/checkbox"
+import { productStatuses, productCategories } from "@/app/products/data"
 import {
   Select,
   SelectContent,
@@ -37,6 +38,7 @@ const productFormSchema = z.object({
   status: z.enum(["active", "draft", "archived"], {
     required_error: "ステータスを選択してください",
   }),
+  categories: z.array(z.string()).min(1, { message: "少なくとも1つのカテゴリを選択してください" }),
   plans: z.array(planSchema).min(1, { message: "少なくとも1つのプランが必要です" }),
 })
 
@@ -47,6 +49,8 @@ export function AddProductForm({ onSubmit, onCancel }: {
   onCancel: () => void 
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [availableCategories, setAvailableCategories] = useState<{ value: string; label: string }[]>(productCategories)
+  const [newCategory, setNewCategory] = useState("")
   
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -55,6 +59,7 @@ export function AddProductForm({ onSubmit, onCancel }: {
       description: "",
       stock: 0,
       status: "draft",
+      categories: [],
       plans: [
         {
           price: 0,
@@ -157,6 +162,86 @@ export function AddProductForm({ onSubmit, onCancel }: {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="categories"
+          render={() => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">カテゴリ</FormLabel>
+                <FormDescription>
+                  商品のカテゴリを一つ以上選択してください
+                </FormDescription>
+              </div>
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                {availableCategories.map((category) => (
+                  <FormField
+                    key={category.value}
+                    control={form.control}
+                    name="categories"
+                    render={({ field }) => {
+                      return (
+                        <FormItem
+                          key={category.value}
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.includes(category.value)}
+                              onCheckedChange={(checked) => {
+                                const currentCategories = field.value || [];
+                                return checked
+                                  ? field.onChange([...currentCategories, category.value])
+                                  : field.onChange(
+                                      currentCategories.filter(
+                                        (value) => value !== category.value
+                                      )
+                                    );
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            {category.label}
+                          </FormLabel>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                ))}
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex gap-2 items-end mt-4">
+          <Input 
+            placeholder="新しいカテゴリ名"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            className="max-w-[200px]"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (newCategory.trim()) {
+                const value = newCategory.toLowerCase().replace(/\s+/g, '-');
+                if (!availableCategories.some(cat => cat.value === value)) {
+                  setAvailableCategories([...availableCategories, { value, label: newCategory }]);
+                  const currentCategories = form.getValues("categories") || [];
+                  form.setValue("categories", [...currentCategories, value], { shouldValidate: true });
+                }
+                setNewCategory("");
+              }
+            }}
+            disabled={!newCategory.trim()}
+          >
+            カテゴリを追加
+          </Button>
+        </div>
 
         <div>
           <h3 className="text-base font-medium mb-2">プラン</h3>
