@@ -15,6 +15,7 @@ export interface Product {
   price: number; // in cents
   stock: number;
   status: "active" | "draft" | "archived";
+  categories?: string[]; // 複数カテゴリを配列で管理
   createdAt: Date;
   recurring?: {
     interval: string;
@@ -27,6 +28,14 @@ export const productStatuses: { value: Product["status"]; label: string; icon: L
   { value: "active", label: "公開中", icon: PackageCheck },
   { value: "draft", label: "下書き", icon: Package },
   { value: "archived", label: "アーカイブ済", icon: PackageX },
+];
+
+export const productCategories: { value: string; label: string }[] = [
+  { value: "clothing", label: "衣類" },
+  { value: "electronics", label: "電子機器" },
+  { value: "food", label: "食品" },
+  { value: "books", label: "書籍" },
+  { value: "other", label: "その他" },
 ];
 
 export const mockProducts: Product[] = [

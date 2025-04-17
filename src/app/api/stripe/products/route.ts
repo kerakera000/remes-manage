@@ -38,6 +38,7 @@ export async function GET() {
           price: defaultPrice ? defaultPrice.unit_amount || 0 : 0, // 後方互換性のため
           stock: product.metadata?.stock ? parseInt(product.metadata.stock) : 0,
           status: product.metadata?.status || (product.active ? 'active' : 'draft'),
+          categories: product.metadata?.categories ? product.metadata.categories.split(',') : [],
           createdAt: new Date(product.created * 1000),
           recurring: defaultPrice?.recurring ? {
             interval: defaultPrice.recurring.interval,
