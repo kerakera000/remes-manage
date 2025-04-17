@@ -27,6 +27,10 @@ export function AddProductDialog() {
             type: plan.type,
             interval: plan.type === 'subscription' ? plan.interval : undefined,
           })),
+          images: [
+            ...(values.mainImage ? [values.mainImage] : []),
+            ...(values.subImages || [])
+          ],
           metadata: {
             stock: values.stock,
             status: values.status,
