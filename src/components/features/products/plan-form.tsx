@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Control } from "react-hook-form"
+import { UseFormReturn } from "react-hook-form"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
@@ -15,7 +15,21 @@ import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 
 export interface PlanFormProps {
-  form: any;
+  form: UseFormReturn<{
+    name: string;
+    description?: string;
+    stock: number;
+    status: "active" | "draft" | "archived";
+    categories: string[];
+    plans: {
+      id?: string;
+      price: number;
+      type: "one_time" | "subscription";
+      interval?: "day" | "week" | "month" | "year" | null;
+    }[];
+    mainImage?: string;
+    subImages?: string[];
+  }>;
   index: number;
   onRemove: () => void;
   isRemoveDisabled: boolean;
@@ -89,7 +103,7 @@ export function PlanForm({ form, index, onRemove, isRemoveDisabled }: PlanFormPr
             render={({ field }) => (
               <FormItem>
                 <FormLabel>サブスクリプション間隔</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="間隔を選択" />

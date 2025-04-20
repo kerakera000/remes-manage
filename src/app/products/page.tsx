@@ -1,17 +1,10 @@
-import React from "react";
-import { MoreHorizontal, Calendar } from "lucide-react";
+"use client"
+
+import React, { useState, useEffect } from "react";
+import { Calendar } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -22,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { productStatuses, type Product, type PriceInfo } from "./data";
 import { AddProductDialog } from "@/components/products/add-product-dialog";
+import { ProductActions } from "@/components/products/product-actions";
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY" }).format(amount);
@@ -63,8 +57,24 @@ async function getProducts() {
   }
 }
 
-export default async function ProductsPage() {
-  const products = await getProducts();
+export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const getStatusInfo = (statusValue: Product["status"]) => {
     return productStatuses.find(s => s.value === statusValue) || productStatuses[1]; // Default to draft if not found
@@ -98,7 +108,16 @@ export default async function ProductsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.length > 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={8} className="h-24 text-center">
+                  <div className="flex justify-center items-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+                    <span className="ml-2">読み込み中...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : products.length > 0 ? (
               products.map((product: Product) => {
                 const statusInfo = getStatusInfo(product.status as Product["status"]);
                 return (
@@ -136,25 +155,7 @@ export default async function ProductsPage() {
                     <TableCell className="text-right">{product.stock}</TableCell>
                     <TableCell>{formatDate(new Date(product.createdAt))}</TableCell>
                     <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">メニューを開く</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>アクション</DropdownMenuLabel>
-                          <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(product.id)}
-                          >
-                            商品IDをコピー
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>編集</DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">削除</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <ProductActions productId={product.id} />
                     </TableCell>
                   </TableRow>
                 );
