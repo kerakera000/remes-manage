@@ -113,16 +113,20 @@ export function EditProductForm({ product }: { product: ProductData }) {
       return []
     }
     
-    const customCategories = product.categories.filter(
-      (cat: string) => !productCategories.some(pc => pc.value === cat)
-    ).map((cat: string) => ({ value: cat, label: cat }))
-    
-    if (customCategories.length > 0) {
-      setAvailableCategories([...productCategories, ...customCategories])
-    }
-    
     return product.categories
   }
+  
+  React.useEffect(() => {
+    if (product.categories && product.categories.length > 0) {
+      const customCategories = product.categories.filter(
+        (cat: string) => !productCategories.some(pc => pc.value === cat)
+      ).map((cat: string) => ({ value: cat, label: cat }))
+      
+      if (customCategories.length > 0) {
+        setAvailableCategories([...productCategories, ...customCategories])
+      }
+    }
+  }, [product.categories])
   
   const handleFileUpload = async (file: File, isMainImage: boolean) => {
     try {
