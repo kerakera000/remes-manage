@@ -1,4 +1,5 @@
 export interface PlanRequest {
+  id?: string;  // 既存のプランIDがある場合
   price: number; // 円単位
   type: 'one_time' | 'subscription'; // 単発購入かサブスクリプションか
   interval?: 'day' | 'week' | 'month' | 'year'; // サブスクリプションの間隔（サブスクリプションの場合のみ）
