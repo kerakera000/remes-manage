@@ -31,10 +31,13 @@ export const productStatuses: { value: Product["status"]; label: string; icon: L
 ];
 
 export const productCategories: { value: string; label: string }[] = [
-  { value: "clothing", label: "衣類" },
-  { value: "electronics", label: "電子機器" },
-  { value: "food", label: "食品" },
-  { value: "books", label: "書籍" },
+  { value: "keyboard", label: "ゲーミングキーボード" },
+  { value: "mouse", label: "ゲーミングマウス" },
+  { value: "headphone", label: "ゲーミングヘッドホン" },
+  { value: "mousepad", label: "ゲーミングマウスパッド" },
+  { value: "new", label: "新規商品" },
+  { value: "sale", label: "セール商品" },
+  { value: "recommended", label: "おすすめ商品" },
   { value: "other", label: "その他" },
 ];
 
