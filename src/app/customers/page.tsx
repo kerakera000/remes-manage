@@ -1,4 +1,6 @@
-import React from "react";
+'use client'; // クライアントコンポーネントに変更
+
+import React, { useState, useEffect } from "react";
 import { MoreHorizontal } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +22,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { db } from "@/lib/firebase"; // Firestoreインポート
+import { collection, getDocs } from "firebase/firestore";
 import { mockCustomers, customerStatuses, type Customer } from "./data"; // Mock data
 
 const formatCurrency = (amount: number) => {
@@ -31,7 +35,55 @@ const formatDate = (date: Date) => {
 };
 
 export default function CustomersPage() {
-  const customers = mockCustomers;
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 
+            process.env.NEXT_PUBLIC_FIREBASE_API_KEY === 'your-api-key') {
+          console.warn("Firebase環境変数が設定されていません。モックデータを使用します。");
+          setError("Firebase環境変数が設定されていません。モックデータを表示しています。");
+          setCustomers(mockCustomers);
+          return;
+        }
+
+        const customersCollection = collection(db, "users");
+        const customerSnapshot = await getDocs(customersCollection);
+        
+        const customerList: Customer[] = customerSnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.displayName || '名前なし',
+            email: data.email || '',
+            phone: data.phoneNumber || undefined,
+            status: data.disabled ? "inactive" : "active",
+            totalSpent: data.totalSpent || 0,
+            orderCount: data.orderCount || 0,
+            createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+          };
+        });
+        
+        if (customerList.length === 0) {
+          console.log("Firestoreにユーザーデータがありません。モックデータを使用します。");
+          setCustomers(mockCustomers);
+        } else {
+          setCustomers(customerList);
+        }
+      } catch (err) {
+        console.error("顧客データの取得に失敗しました:", err);
+        setError("顧客データの取得に失敗しました。モックデータを表示しています。");
+        setCustomers(mockCustomers);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCustomers();
+  }, []);
 
   const getStatusInfo = (statusValue: Customer["status"]) => {
     return customerStatuses.find(s => s.value === statusValue) || customerStatuses[1]; // Default to inactive
@@ -43,6 +95,12 @@ export default function CustomersPage() {
         <h1 className="text-2xl font-semibold">顧客管理</h1>
         {/* Maybe add filtering/search later */}
       </div>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
 
       <div className="rounded-md border">
         <Table>
@@ -63,7 +121,13 @@ export default function CustomersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {customers.length > 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={8} className="h-24 text-center">
+                  データを読み込み中...
+                </TableCell>
+              </TableRow>
+            ) : customers.length > 0 ? (
               customers.map((customer) => {
                 const statusInfo = getStatusInfo(customer.status);
                 return (
