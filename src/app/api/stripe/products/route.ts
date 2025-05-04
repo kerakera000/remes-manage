@@ -93,6 +93,12 @@ export async function POST(request: Request) {
           };
         }
         
+        if (plan.rentalPeriod && plan.rentalUnit) {
+          if (!product.metadata) product.metadata = {};
+          product.metadata.rentalPeriod = plan.rentalPeriod.toString();
+          product.metadata.rentalUnit = plan.rentalUnit;
+        }
+        
         return stripe.prices.create(priceData);
       })
     );
