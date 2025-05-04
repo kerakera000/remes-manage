@@ -26,6 +26,8 @@ export interface PlanFormProps {
       price: number;
       type: "one_time" | "subscription";
       interval?: "day" | "week" | "month" | "year" | null;
+      rentalPeriod?: number; // レンタル期間の数値
+      rentalUnit?: "day" | "week" | "month" | null; // レンタル期間の単位
     }[];
     mainImage?: string;
     subImages?: string[];
@@ -123,6 +125,55 @@ export function PlanForm({ form, index, onRemove, isRemoveDisabled }: PlanFormPr
           />
         </div>
       )}
+      
+      <div className="mt-4 space-y-4">
+        <h4 className="text-sm font-medium">レンタル期間</h4>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name={`plans.${index}.rentalPeriod`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>期間</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    placeholder="30" 
+                    {...field} 
+                    value={field.value === undefined ? '' : field.value} 
+                    onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value))} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name={`plans.${index}.rentalUnit`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>単位</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value || "day"}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="単位を選択" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="day">日</SelectItem>
+                    <SelectItem value="week">週</SelectItem>
+                    <SelectItem value="month">月</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <FormDescription>商品のレンタル期間を設定してください</FormDescription>
+      </div>
     </div>
   )
 }
