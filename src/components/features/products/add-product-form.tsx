@@ -31,10 +31,6 @@ const planSchema = z.object({
   interval: z.enum(["day", "week", "month", "year"], {
     required_error: "サブスクリプション間隔を選択してください",
   }).optional().nullable(),
-  planPeriod: z.coerce.number().min(1, { message: "プラン期間は1以上で入力してください" }).optional(),
-  planPeriodUnit: z.enum(["day", "month"], {
-    required_error: "プラン期間の単位を選択してください",
-  }).optional(),
 })
 
 const productFormSchema = z.object({
@@ -143,8 +139,6 @@ export function AddProductForm({ onSubmit, onCancel }: {
           price: 0,
           type: "subscription",
           interval: "month",
-          planPeriod: 1,
-          planPeriodUnit: "month",
         }
       ],
       mainImage: "",
@@ -477,8 +471,6 @@ export function AddProductForm({ onSubmit, onCancel }: {
                 price: 0,
                 type: "subscription",
                 interval: "month",
-                planPeriod: 1,
-                planPeriodUnit: "month",
               });
             }}
           >

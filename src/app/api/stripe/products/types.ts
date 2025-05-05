@@ -3,8 +3,6 @@ export interface PlanRequest {
   price: number; // 円単位
   type: 'one_time' | 'subscription'; // 単発購入かサブスクリプションか
   interval?: 'day' | 'week' | 'month' | 'year'; // サブスクリプションの間隔（サブスクリプションの場合のみ）
-  planPeriod?: number; // プラン期間の値
-  planPeriodUnit?: 'day' | 'month'; // プラン期間の単位
 }
 
 export interface CreateProductRequest {
