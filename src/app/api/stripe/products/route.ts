@@ -89,8 +89,8 @@ export async function POST(request: Request) {
       status: body.metadata?.status || (product.active ? 'active' : 'draft'),
       categories: body.metadata?.categories ? String(body.metadata.categories).split(',') : [],
       createdAt: new Date(),
-      planPeriod: body.plans[0].planPeriod?.toString() || null,
-      planPeriodUnit: body.plans[0].planPeriodUnit || null,
+      rentalPeriod: body.plans[0].rentalPeriod?.toString() || null,
+      rentalUnit: body.plans[0].rentalUnit || null,
     };
     
     try {

@@ -26,8 +26,6 @@ export interface PlanFormProps {
       price: number;
       type: "one_time" | "subscription";
       interval?: "day" | "week" | "month" | "year" | null;
-      planPeriod?: number;
-      planPeriodUnit?: "day" | "month";
     }[];
     mainImage?: string;
     subImages?: string[];
@@ -125,48 +123,6 @@ export function PlanForm({ form, index, onRemove, isRemoveDisabled }: PlanFormPr
           />
         </div>
       )}
-      
-      <div className="mt-4">
-        <FormField
-          control={form.control}
-          name={`plans.${index}.planPeriod`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>プラン期間</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="1" {...field} />
-              </FormControl>
-              <FormDescription>プランの期間を数値で入力してください</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-      
-      <div className="mt-4">
-        <FormField
-          control={form.control}
-          name={`plans.${index}.planPeriodUnit`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>期間単位</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="単位を選択" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="day">日</SelectItem>
-                  <SelectItem value="month">月</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>プラン期間の単位を選択してください</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
     </div>
   )
 }
