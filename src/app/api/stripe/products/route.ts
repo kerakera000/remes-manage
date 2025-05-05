@@ -72,12 +72,24 @@ export async function POST(request: Request) {
       );
     }
 
+    const metadata: Record<string, string> = {
+      ...(body.metadata as Record<string, string> || {})
+    };
+    
+    if (body.plans[0].planPeriod) {
+      metadata.planPeriod = body.plans[0].planPeriod.toString();
+    }
+    
+    if (body.plans[0].planPeriodUnit) {
+      metadata.planPeriodUnit = body.plans[0].planPeriodUnit;
+    }
+
     const product = await stripe.products.create({
       name: body.name,
       description: body.description,
       active: body.active,
       images: body.images,
-      metadata: body.metadata as Record<string, string>,
+      metadata: metadata,
     });
 
     const productData = {
