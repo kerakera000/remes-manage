@@ -35,6 +35,10 @@ const planSchema = z.object({
   interval: z.enum(["day", "week", "month", "year"], {
     required_error: "サブスクリプション間隔を選択してください",
   }).optional().nullable(),
+  planPeriod: z.coerce.number().min(1, { message: "プラン期間は1以上で入力してください" }).optional(),
+  planPeriodUnit: z.enum(["day", "month"], {
+    required_error: "プラン期間の単位を選択してください",
+  }).optional(),
 })
 
 const productFormSchema = z.object({
@@ -92,18 +96,24 @@ export function EditProductForm({ product }: { product: ProductData }) {
         price: price.unit_amount,
         type: price.recurring ? "subscription" as const : "one_time" as const,
         interval: price.recurring?.interval || null,
+        planPeriod: 1,  // デフォルト値
+        planPeriodUnit: "month" as const,  // デフォルト値
       }))
     } else if (product.recurring) {
       return [{
         price: product.price,
         type: "subscription" as const,
         interval: product.recurring.interval,
+        planPeriod: 1,  // デフォルト値
+        planPeriodUnit: "month" as const,  // デフォルト値
       }]
     } else {
       return [{
         price: product.price,
         type: "one_time" as const,
         interval: null,
+        planPeriod: 1,  // デフォルト値
+        planPeriodUnit: "month" as const,  // デフォルト値
       }]
     }
   }
@@ -231,6 +241,8 @@ export function EditProductForm({ product }: { product: ProductData }) {
             price: plan.price,
             type: plan.type,
             interval: plan.type === 'subscription' ? plan.interval : undefined,
+            planPeriod: plan.planPeriod,
+            planPeriodUnit: plan.planPeriodUnit,
           })),
           images: [
             ...(values.mainImage ? [values.mainImage] : []),
@@ -569,6 +581,8 @@ export function EditProductForm({ product }: { product: ProductData }) {
                     price: 0,
                     type: "subscription",
                     interval: "month",
+                    planPeriod: 1,
+                    planPeriodUnit: "month",
                   });
                 }}
               >
