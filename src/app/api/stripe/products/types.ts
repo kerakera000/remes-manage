@@ -3,8 +3,6 @@ export interface PlanRequest {
   price: number; // 円単位
   type: 'one_time' | 'subscription'; // 単発購入かサブスクリプションか
   interval?: 'day' | 'week' | 'month' | 'year'; // サブスクリプションの間隔（サブスクリプションの場合のみ）
-  rentalPeriod?: number; // レンタル期間の数値
-  rentalUnit?: 'day' | 'week' | 'month'; // レンタル期間の単位
 }
 
 export interface CreateProductRequest {

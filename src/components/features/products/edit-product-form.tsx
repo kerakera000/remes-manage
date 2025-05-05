@@ -35,10 +35,6 @@ const planSchema = z.object({
   interval: z.enum(["day", "week", "month", "year"], {
     required_error: "サブスクリプション間隔を選択してください",
   }).optional().nullable(),
-  rentalPeriod: z.coerce.number().min(1, { message: "レンタル期間は1以上で入力してください" }).optional(),
-  rentalUnit: z.enum(["day", "week", "month"], {
-    required_error: "レンタル期間の単位を選択してください",
-  }).optional().nullable(),
 })
 
 const productFormSchema = z.object({
@@ -63,11 +59,6 @@ interface ProductData {
   status: "active" | "draft" | "archived";
   categories: string[];
   images?: string[];
-  metadata?: {
-    rentalPeriod?: string;
-    rentalUnit?: string;
-    [key: string]: string | undefined;
-  };
   prices?: Array<{
     id: string;
     unit_amount: number;
@@ -95,33 +86,24 @@ export function EditProductForm({ product }: { product: ProductData }) {
   const subImagesInputRef = useRef<HTMLInputElement>(null)
   
   const preparePlansData = () => {
-    const rentalPeriod = product.metadata?.rentalPeriod ? parseInt(product.metadata.rentalPeriod) : undefined;
-    const rentalUnit = product.metadata?.rentalUnit || "day";
-    
     if (product.prices && product.prices.length > 0) {
       return product.prices.map((price) => ({
         id: price.id,
         price: price.unit_amount,
         type: price.recurring ? "subscription" as const : "one_time" as const,
         interval: price.recurring?.interval || null,
-        rentalPeriod: rentalPeriod,
-        rentalUnit: rentalUnit as "day" | "week" | "month" | null,
       }))
     } else if (product.recurring) {
       return [{
         price: product.price,
         type: "subscription" as const,
         interval: product.recurring.interval,
-        rentalPeriod: rentalPeriod,
-        rentalUnit: rentalUnit as "day" | "week" | "month" | null,
       }]
     } else {
       return [{
         price: product.price,
         type: "one_time" as const,
         interval: null,
-        rentalPeriod: rentalPeriod,
-        rentalUnit: rentalUnit as "day" | "week" | "month" | null,
       }]
     }
   }
@@ -249,8 +231,6 @@ export function EditProductForm({ product }: { product: ProductData }) {
             price: plan.price,
             type: plan.type,
             interval: plan.type === 'subscription' ? plan.interval : undefined,
-            rentalPeriod: plan.rentalPeriod,
-            rentalUnit: plan.rentalUnit,
           })),
           images: [
             ...(values.mainImage ? [values.mainImage] : []),
@@ -589,8 +569,6 @@ export function EditProductForm({ product }: { product: ProductData }) {
                     price: 0,
                     type: "subscription",
                     interval: "month",
-                    rentalPeriod: 30,
-                    rentalUnit: "day",
                   });
                 }}
               >

@@ -31,10 +31,6 @@ const planSchema = z.object({
   interval: z.enum(["day", "week", "month", "year"], {
     required_error: "サブスクリプション間隔を選択してください",
   }).optional().nullable(),
-  rentalPeriod: z.coerce.number().min(1, { message: "レンタル期間は1以上で入力してください" }).optional(),
-  rentalUnit: z.enum(["day", "week", "month"], {
-    required_error: "レンタル期間の単位を選択してください",
-  }).optional().nullable(),
 })
 
 const productFormSchema = z.object({
@@ -143,8 +139,6 @@ export function AddProductForm({ onSubmit, onCancel }: {
           price: 0,
           type: "subscription",
           interval: "month",
-          rentalPeriod: 30,
-          rentalUnit: "day",
         }
       ],
       mainImage: "",
@@ -477,8 +471,6 @@ export function AddProductForm({ onSubmit, onCancel }: {
                 price: 0,
                 type: "subscription",
                 interval: "month",
-                rentalPeriod: 30,
-                rentalUnit: "day",
               });
             }}
           >
