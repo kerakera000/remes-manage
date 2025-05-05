@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import stripe from '@/lib/stripe';
 import type { CreateProductRequest } from './types';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, collection } from 'firebase/firestore';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,6 +80,25 @@ export async function POST(request: Request) {
       metadata: body.metadata as Record<string, string>,
     });
 
+    const productData = {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      active: product.active,
+      stock: body.metadata?.stock ? parseInt(String(body.metadata.stock)) : 0,
+      status: body.metadata?.status || (product.active ? 'active' : 'draft'),
+      categories: body.metadata?.categories ? String(body.metadata.categories).split(',') : [],
+      createdAt: new Date(),
+      rentalPeriod: body.plans[0].rentalPeriod?.toString() || null,
+      rentalUnit: body.plans[0].rentalUnit || null,
+    };
+    
+    try {
+      await setDoc(doc(db, 'products', product.id), productData);
+    } catch (error) {
+      console.error('Error saving to Firestore:', error);
+    }
+    
     const prices = await Promise.all(
       body.plans.map(plan => {
         const priceData: any = {
