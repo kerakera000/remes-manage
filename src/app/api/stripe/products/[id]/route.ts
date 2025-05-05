@@ -11,7 +11,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const product = await stripe.products.retrieve(params.id, {
+    const { id } = await params;
+    const product = await stripe.products.retrieve(id, {
       expand: ['default_price'],
     });
 
