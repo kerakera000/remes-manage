@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import stripe from '@/lib/stripe';
 import type { CreateProductRequest } from '../../types';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +11,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const product = await stripe.products.retrieve(params.id, {
+    const { id } = await params;
+    const product = await stripe.products.retrieve(id, {
       expand: ['default_price'],
     });
 
@@ -78,6 +81,25 @@ export async function PUT(
       metadata: body.metadata as Record<string, string>,
     });
 
+    const productData = {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      active: product.active,
+      stock: body.metadata?.stock ? parseInt(String(body.metadata.stock)) : 0,
+      status: body.metadata?.status || (product.active ? 'active' : 'draft'),
+      categories: body.metadata?.categories ? String(body.metadata.categories).split(',') : [],
+      updatedAt: new Date(),
+      rentalPeriod: body.plans[0].rentalPeriod?.toString() || null,
+      rentalUnit: body.plans[0].rentalUnit || null,
+    };
+    
+    try {
+      await setDoc(doc(db, 'products', product.id), productData, { merge: true });
+    } catch (error) {
+      console.error('Error updating Firestore:', error);
+    }
+    
     const updatedPrices = await Promise.all(
       body.plans.map(async plan => {
         if (plan.id) {

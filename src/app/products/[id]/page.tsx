@@ -22,7 +22,8 @@ async function getProduct(id: string) {
 }
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
-  const product = await getProduct(params.id);
+  const { id } = await params;
+  const product = await getProduct(id);
 
   if (!product) {
     notFound();
