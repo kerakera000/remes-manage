@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Plus, X } from "lucide-react"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { storage } from "@/lib/firebase"
+import { storage, auth } from "@/lib/firebase"
 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -68,6 +68,10 @@ export function AddProductForm({ onSubmit, onCancel }: {
       setIsUploading(true)
       const fileName = `${Date.now()}_${file.name}`;
       const storageRef = ref(storage, `products/${fileName}`);
+      
+      if (!auth.currentUser) {
+        throw new Error("認証されていません。ログインしてください。");
+      }
       
       const snapshot = await uploadBytes(storageRef, file);
       
