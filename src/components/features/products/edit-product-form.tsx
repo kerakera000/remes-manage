@@ -31,7 +31,7 @@ const planSchema = z.object({
   price: z.coerce.number().min(1, { message: "価格は1円以上で入力してください" }),
   type: z.literal("subscription"),
   interval: z.literal("month"),
-  interval_count: z.union([
+  subscription_period: z.union([
     z.literal(3),
     z.literal(6),
     z.literal(12)
@@ -92,19 +92,19 @@ export function EditProductForm({ product }: { product: ProductData }) {
         price: 0,
         type: "subscription" as const,
         interval: "month" as const,
-        interval_count: 3 as const,
+        subscription_period: 3 as const,
       },
       {
         price: 0,
         type: "subscription" as const,
         interval: "month" as const,
-        interval_count: 6 as const,
+        subscription_period: 6 as const,
       },
       {
         price: 0,
         type: "subscription" as const,
         interval: "month" as const,
-        interval_count: 12 as const,
+        subscription_period: 12 as const,
       }
     ];
     
@@ -112,20 +112,20 @@ export function EditProductForm({ product }: { product: ProductData }) {
       const existingPlanMap = new Map();
       
       product.prices.forEach(price => {
-        const interval_count = price.recurring?.interval_count || 3;
-        if (interval_count === 3 || interval_count === 6 || interval_count === 12) {
-          existingPlanMap.set(interval_count, {
+        const subscription_period = price.recurring?.interval_count || 3;
+        if (subscription_period === 3 || subscription_period === 6 || subscription_period === 12) {
+          existingPlanMap.set(subscription_period, {
             id: price.id,
             price: price.unit_amount,
             type: "subscription" as const,
             interval: "month" as const,
-            interval_count: interval_count as 3 | 6 | 12,
+            subscription_period: subscription_period as 3 | 6 | 12,
           });
         }
       });
       
       return defaultPlans.map(plan => {
-        const existingPlan = existingPlanMap.get(plan.interval_count);
+        const existingPlan = existingPlanMap.get(plan.subscription_period);
         return existingPlan || plan;
       });
     }
@@ -256,7 +256,7 @@ export function EditProductForm({ product }: { product: ProductData }) {
             price: plan.price,
             type: plan.type,
             interval: plan.type === 'subscription' ? plan.interval : undefined,
-            interval_count: plan.interval_count,
+            subscription_period: plan.subscription_period,
           })),
           images: [
             ...(values.mainImage ? [values.mainImage] : []),

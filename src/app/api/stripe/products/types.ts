@@ -3,7 +3,7 @@ export interface PlanRequest {
   price: number; // 円単位
   type: 'subscription'; // サブスクリプションのみに制限
   interval: 'month'; // 月単位のみに制限
-  interval_count: 3 | 6 | 12; // 3, 6, 12ヶ月のみに制限
+  subscription_period: 3 | 6 | 12; // 3, 6, 12ヶ月のサブスクリプション期間
 }
 
 export interface CreateProductRequest {

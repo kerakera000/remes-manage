@@ -27,7 +27,7 @@ const planSchema = z.object({
   price: z.coerce.number().min(1, { message: "価格は1円以上で入力してください" }),
   type: z.literal("subscription"),
   interval: z.literal("month"),
-  interval_count: z.union([
+  subscription_period: z.union([
     z.literal(3),
     z.literal(6),
     z.literal(12)
@@ -140,19 +140,19 @@ export function AddProductForm({ onSubmit, onCancel }: {
           price: 0,
           type: "subscription",
           interval: "month",
-          interval_count: 3,
+          subscription_period: 3,
         },
         {
           price: 0,
           type: "subscription",
           interval: "month",
-          interval_count: 6,
+          subscription_period: 6,
         },
         {
           price: 0,
           type: "subscription",
           interval: "month",
-          interval_count: 12,
+          subscription_period: 12,
         }
       ],
       mainImage: "",
