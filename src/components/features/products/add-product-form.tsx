@@ -25,12 +25,13 @@ import { PlanForm } from "./plan-form"
 
 const planSchema = z.object({
   price: z.coerce.number().min(1, { message: "価格は1円以上で入力してください" }),
-  type: z.enum(["one_time", "subscription"], {
-    required_error: "プランタイプを選択してください",
-  }),
-  interval: z.enum(["day", "week", "month", "year"], {
-    required_error: "サブスクリプション間隔を選択してください",
-  }).optional().nullable(),
+  type: z.literal("subscription"),
+  interval: z.literal("month"),
+  interval_count: z.union([
+    z.literal(3),
+    z.literal(6),
+    z.literal(9)
+  ], { required_error: "サブスクリプション期間を選択してください" }),
 })
 
 const productFormSchema = z.object({
@@ -139,6 +140,7 @@ export function AddProductForm({ onSubmit, onCancel }: {
           price: 0,
           type: "subscription",
           interval: "month",
+          interval_count: 3,
         }
       ],
       mainImage: "",
@@ -249,7 +251,7 @@ export function AddProductForm({ onSubmit, onCancel }: {
                         </svg>
                       </div>
                       <p className="text-sm text-muted-foreground">メイン画像をアップロード</p>
-                      <p className="text-xs text-muted-foreground mt-1">クリックして選択、またはドラッグ&ドロップ</p>
+                      <p className="text-xs text-muted-foreground mt-1">クリックして選択、またはドラッグ&amp;ドロップ</p>
                     </div>
                   )}
                 </div>
@@ -471,12 +473,17 @@ export function AddProductForm({ onSubmit, onCancel }: {
                 price: 0,
                 type: "subscription",
                 interval: "month",
+                interval_count: 3,
               });
             }}
+            disabled={fields.length >= 3}
           >
             <Plus className="h-4 w-4 mr-2" />
             プランを追加
           </Button>
+          {fields.length >= 3 && (
+            <p className="text-xs text-muted-foreground mt-2">プランは最大3つまで追加できます</p>
+          )}
         </div>
         
         <div className="flex justify-end space-x-2">

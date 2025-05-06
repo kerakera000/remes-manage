@@ -1,8 +1,9 @@
 export interface PlanRequest {
   id?: string;  // 既存のプランIDがある場合
   price: number; // 円単位
-  type: 'one_time' | 'subscription'; // 単発購入かサブスクリプションか
-  interval?: 'day' | 'week' | 'month' | 'year'; // サブスクリプションの間隔（サブスクリプションの場合のみ）
+  type: 'subscription'; // サブスクリプションのみに制限
+  interval: 'month'; // 月単位のみに制限
+  interval_count: 3 | 6 | 9; // 3, 6, 9ヶ月のみに制限
 }
 
 export interface CreateProductRequest {

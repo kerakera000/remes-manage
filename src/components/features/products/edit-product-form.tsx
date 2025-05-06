@@ -29,12 +29,13 @@ import { PlanForm } from "./plan-form"
 const planSchema = z.object({
   id: z.string().optional(),
   price: z.coerce.number().min(1, { message: "価格は1円以上で入力してください" }),
-  type: z.enum(["one_time", "subscription"], {
-    required_error: "プランタイプを選択してください",
-  }),
-  interval: z.enum(["day", "week", "month", "year"], {
-    required_error: "サブスクリプション間隔を選択してください",
-  }).optional().nullable(),
+  type: z.literal("subscription"),
+  interval: z.literal("month"),
+  interval_count: z.union([
+    z.literal(3),
+    z.literal(6),
+    z.literal(9)
+  ], { required_error: "サブスクリプション期間を選択してください" }),
 })
 
 const productFormSchema = z.object({
@@ -87,23 +88,38 @@ export function EditProductForm({ product }: { product: ProductData }) {
   
   const preparePlansData = () => {
     if (product.prices && product.prices.length > 0) {
-      return product.prices.map((price) => ({
-        id: price.id,
-        price: price.unit_amount,
-        type: price.recurring ? "subscription" as const : "one_time" as const,
-        interval: price.recurring?.interval || null,
-      }))
+      return product.prices.map((price) => {
+        let interval_count = price.recurring?.interval_count || 3;
+        if (interval_count !== 3 && interval_count !== 6 && interval_count !== 9) {
+          interval_count = 3; // Default to 3 if not a valid value
+        }
+        
+        return {
+          id: price.id,
+          price: price.unit_amount,
+          type: "subscription" as const,
+          interval: "month" as const,
+          interval_count: interval_count as 3 | 6 | 9,
+        };
+      })
     } else if (product.recurring) {
+      let interval_count = product.recurring.interval_count || 3;
+      if (interval_count !== 3 && interval_count !== 6 && interval_count !== 9) {
+        interval_count = 3; // Default to 3 if not a valid value
+      }
+      
       return [{
         price: product.price,
         type: "subscription" as const,
-        interval: product.recurring.interval,
+        interval: "month" as const,
+        interval_count: interval_count as 3 | 6 | 9,
       }]
     } else {
       return [{
         price: product.price,
-        type: "one_time" as const,
-        interval: null,
+        type: "subscription" as const,
+        interval: "month" as const,
+        interval_count: 3 as const,
       }]
     }
   }
@@ -231,6 +247,7 @@ export function EditProductForm({ product }: { product: ProductData }) {
             price: plan.price,
             type: plan.type,
             interval: plan.type === 'subscription' ? plan.interval : undefined,
+            interval_count: plan.interval_count,
           })),
           images: [
             ...(values.mainImage ? [values.mainImage] : []),
@@ -569,12 +586,17 @@ export function EditProductForm({ product }: { product: ProductData }) {
                     price: 0,
                     type: "subscription",
                     interval: "month",
+                    interval_count: 3,
                   });
                 }}
+                disabled={fields.length >= 3}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 プランを追加
               </Button>
+              {fields.length >= 3 && (
+                <p className="text-xs text-muted-foreground mt-2">プランは最大3つまで追加できます</p>
+              )}
             </div>
             
             <div className="flex justify-end space-x-2">

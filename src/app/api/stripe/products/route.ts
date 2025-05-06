@@ -89,8 +89,6 @@ export async function POST(request: Request) {
       status: body.metadata?.status || (product.active ? 'active' : 'draft'),
       categories: body.metadata?.categories ? String(body.metadata.categories).split(',') : [],
       createdAt: new Date(),
-      rentalPeriod: body.plans[0].rentalPeriod?.toString() || null,
-      rentalUnit: body.plans[0].rentalUnit || null,
     };
     
     try {
@@ -110,7 +108,7 @@ export async function POST(request: Request) {
         if (plan.type === 'subscription' && plan.interval) {
           priceData.recurring = {
             interval: plan.interval,
-            interval_count: 1,
+            interval_count: plan.interval_count || 3,
           };
         }
         
