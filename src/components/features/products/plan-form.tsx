@@ -24,8 +24,9 @@ export interface PlanFormProps {
     plans: {
       id?: string;
       price: number;
-      type: "one_time" | "subscription";
-      interval?: "day" | "week" | "month" | "year" | null;
+      type: "subscription";
+      interval: "month";
+      interval_count: 3 | 6 | 9;
     }[];
     mainImage?: string;
     subImages?: string[];
@@ -73,56 +74,28 @@ export function PlanForm({ form, index, onRemove, isRemoveDisabled }: PlanFormPr
       <div className="mt-4">
         <FormField
           control={form.control}
-          name={`plans.${index}.type`}
+          name={`plans.${index}.interval_count`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>プランタイプ</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormLabel>サブスクリプション期間</FormLabel>
+              <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="タイプを選択" />
+                    <SelectValue placeholder="期間を選択" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="one_time">単発購入</SelectItem>
-                  <SelectItem value="subscription">サブスクリプション</SelectItem>
+                  <SelectItem value="3">3ヶ月</SelectItem>
+                  <SelectItem value="6">6ヶ月</SelectItem>
+                  <SelectItem value="9">9ヶ月</SelectItem>
                 </SelectContent>
               </Select>
-              <FormDescription>単発購入かサブスクリプションかを選択してください</FormDescription>
+              <FormDescription>サブスクリプションの期間を選択してください</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
       </div>
-      
-      {form.watch(`plans.${index}.type`) === "subscription" && (
-        <div className="mt-4">
-          <FormField
-            control={form.control}
-            name={`plans.${index}.interval`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>サブスクリプション間隔</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="間隔を選択" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="day">日</SelectItem>
-                    <SelectItem value="week">週</SelectItem>
-                    <SelectItem value="month">月</SelectItem>
-                    <SelectItem value="year">年</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormDescription>サブスクリプションの請求間隔を選択してください</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      )}
     </div>
   )
 }
