@@ -108,7 +108,12 @@ export async function POST(request: Request) {
         if (plan.type === 'subscription' && plan.interval) {
           priceData.recurring = {
             interval: plan.interval,
-            interval_count: plan.interval_count || 3,
+            interval_count: 1, // 請求は毎月（1ヶ月ごと）
+          };
+          
+          priceData.metadata = {
+            ...priceData.metadata,
+            subscription_period: plan.subscription_period || 3,
           };
         }
         

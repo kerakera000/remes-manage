@@ -24,7 +24,7 @@ export interface PlanFormProps {
       price: number;
       type: "subscription";
       interval: "month";
-      interval_count: 3 | 6 | 12;
+      subscription_period: 3 | 6 | 12;
     }[];
     mainImage?: string;
     subImages?: string[];
@@ -57,7 +57,7 @@ export function PlanForm({ form, index, planLabel }: PlanFormProps) {
       <div className="mt-4">
         <FormField
           control={form.control}
-          name={`plans.${index}.interval_count`}
+          name={`plans.${index}.subscription_period`}
           render={({ field }) => (
             <FormItem>
               <FormLabel>サブスクリプション期間</FormLabel>
@@ -73,7 +73,7 @@ export function PlanForm({ form, index, planLabel }: PlanFormProps) {
                   <SelectItem value="12">12ヶ月</SelectItem>
                 </SelectContent>
               </Select>
-              <FormDescription>サブスクリプションの期間を選択してください</FormDescription>
+              <FormDescription>サブスクリプションの期間を選択してください（請求は毎月）</FormDescription>
               <FormMessage />
             </FormItem>
           )}
