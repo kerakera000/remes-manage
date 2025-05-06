@@ -30,7 +30,7 @@ const planSchema = z.object({
   interval_count: z.union([
     z.literal(3),
     z.literal(6),
-    z.literal(9)
+    z.literal(12)
   ], { required_error: "サブスクリプション期間を選択してください" }),
 })
 
@@ -141,6 +141,18 @@ export function AddProductForm({ onSubmit, onCancel }: {
           type: "subscription",
           interval: "month",
           interval_count: 3,
+        },
+        {
+          price: 0,
+          type: "subscription",
+          interval: "month",
+          interval_count: 6,
+        },
+        {
+          price: 0,
+          type: "subscription",
+          interval: "month",
+          interval_count: 12,
         }
       ],
       mainImage: "",
@@ -452,38 +464,18 @@ export function AddProductForm({ onSubmit, onCancel }: {
         <div>
           <h3 className="text-base font-medium mb-2">プラン</h3>
           <div className="space-y-4">
-            {fields.map((field, index) => (
-              <PlanForm
-                key={field.id}
-                form={form}
-                index={index}
-                onRemove={() => remove(index)}
-                isRemoveDisabled={fields.length <= 1}
-              />
-            ))}
+            {fields.map((field, index) => {
+              const planLabels = ["3ヶ月プラン", "6ヶ月プラン", "12ヶ月プラン"];
+              return (
+                <PlanForm
+                  key={field.id}
+                  form={form}
+                  index={index}
+                  planLabel={planLabels[index]}
+                />
+              );
+            })}
           </div>
-          
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-4"
-            onClick={() => {
-              append({
-                price: 0,
-                type: "subscription",
-                interval: "month",
-                interval_count: 3,
-              });
-            }}
-            disabled={fields.length >= 3}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            プランを追加
-          </Button>
-          {fields.length >= 3 && (
-            <p className="text-xs text-muted-foreground mt-2">プランは最大3つまで追加できます</p>
-          )}
         </div>
         
         <div className="flex justify-end space-x-2">
