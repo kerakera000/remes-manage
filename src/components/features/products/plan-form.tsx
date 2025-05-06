@@ -11,8 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { X } from "lucide-react"
 
 export interface PlanFormProps {
   form: UseFormReturn<{
@@ -26,35 +24,20 @@ export interface PlanFormProps {
       price: number;
       type: "subscription";
       interval: "month";
-      interval_count: 3 | 6 | 9;
+      interval_count: 3 | 6 | 12;
     }[];
     mainImage?: string;
     subImages?: string[];
   }>;
   index: number;
-  onRemove: () => void;
-  isRemoveDisabled: boolean;
+  planLabel: string;
 }
 
-export function PlanForm({ form, index, onRemove, isRemoveDisabled }: PlanFormProps) {
+export function PlanForm({ form, index, planLabel }: PlanFormProps) {
   
   return (
-    <div className="border p-4 rounded-md mb-4 relative">
-      <div className="absolute top-2 right-2">
-        <Button 
-          type="button" 
-          variant="ghost" 
-          size="icon" 
-          onClick={onRemove}
-          disabled={isRemoveDisabled}
-          className="h-8 w-8"
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">プランを削除</span>
-        </Button>
-      </div>
-      
-      <h3 className="text-sm font-medium mb-4">プラン {index + 1}</h3>
+    <div className="border p-4 rounded-md mb-4 relative">      
+      <h3 className="text-sm font-medium mb-4">{planLabel}</h3>
       
       <FormField
         control={form.control}
@@ -87,7 +70,7 @@ export function PlanForm({ form, index, onRemove, isRemoveDisabled }: PlanFormPr
                 <SelectContent>
                   <SelectItem value="3">3ヶ月</SelectItem>
                   <SelectItem value="6">6ヶ月</SelectItem>
-                  <SelectItem value="9">9ヶ月</SelectItem>
+                  <SelectItem value="12">12ヶ月</SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription>サブスクリプションの期間を選択してください</FormDescription>

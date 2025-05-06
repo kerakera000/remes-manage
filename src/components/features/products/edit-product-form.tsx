@@ -34,7 +34,7 @@ const planSchema = z.object({
   interval_count: z.union([
     z.literal(3),
     z.literal(6),
-    z.literal(9)
+    z.literal(12)
   ], { required_error: "サブスクリプション期間を選択してください" }),
 })
 
@@ -87,41 +87,50 @@ export function EditProductForm({ product }: { product: ProductData }) {
   const subImagesInputRef = useRef<HTMLInputElement>(null)
   
   const preparePlansData = () => {
-    if (product.prices && product.prices.length > 0) {
-      return product.prices.map((price) => {
-        let interval_count = price.recurring?.interval_count || 3;
-        if (interval_count !== 3 && interval_count !== 6 && interval_count !== 9) {
-          interval_count = 3; // Default to 3 if not a valid value
-        }
-        
-        return {
-          id: price.id,
-          price: price.unit_amount,
-          type: "subscription" as const,
-          interval: "month" as const,
-          interval_count: interval_count as 3 | 6 | 9,
-        };
-      })
-    } else if (product.recurring) {
-      let interval_count = product.recurring.interval_count || 3;
-      if (interval_count !== 3 && interval_count !== 6 && interval_count !== 9) {
-        interval_count = 3; // Default to 3 if not a valid value
-      }
-      
-      return [{
-        price: product.price,
-        type: "subscription" as const,
-        interval: "month" as const,
-        interval_count: interval_count as 3 | 6 | 9,
-      }]
-    } else {
-      return [{
-        price: product.price,
+    const defaultPlans = [
+      {
+        price: 0,
         type: "subscription" as const,
         interval: "month" as const,
         interval_count: 3 as const,
-      }]
+      },
+      {
+        price: 0,
+        type: "subscription" as const,
+        interval: "month" as const,
+        interval_count: 6 as const,
+      },
+      {
+        price: 0,
+        type: "subscription" as const,
+        interval: "month" as const,
+        interval_count: 12 as const,
+      }
+    ];
+    
+    if (product.prices && product.prices.length > 0) {
+      const existingPlanMap = new Map();
+      
+      product.prices.forEach(price => {
+        const interval_count = price.recurring?.interval_count || 3;
+        if (interval_count === 3 || interval_count === 6 || interval_count === 12) {
+          existingPlanMap.set(interval_count, {
+            id: price.id,
+            price: price.unit_amount,
+            type: "subscription" as const,
+            interval: "month" as const,
+            interval_count: interval_count as 3 | 6 | 12,
+          });
+        }
+      });
+      
+      return defaultPlans.map(plan => {
+        const existingPlan = existingPlanMap.get(plan.interval_count);
+        return existingPlan || plan;
+      });
     }
+    
+    return defaultPlans;
   }
   
   const prepareCategories = () => {
@@ -225,7 +234,7 @@ export function EditProductForm({ product }: { product: ProductData }) {
     },
   })
   
-  const { fields, append, remove } = useFieldArray({
+  const { fields } = useFieldArray({
     control: form.control,
     name: "plans",
   })
@@ -565,38 +574,18 @@ export function EditProductForm({ product }: { product: ProductData }) {
             <div>
               <h3 className="text-base font-medium mb-2">プラン</h3>
               <div className="space-y-4">
-                {fields.map((field, index) => (
-                  <PlanForm
-                    key={field.id}
-                    form={form}
-                    index={index}
-                    onRemove={() => remove(index)}
-                    isRemoveDisabled={fields.length <= 1}
-                  />
-                ))}
+                {fields.map((field, index) => {
+                  const planLabels = ["3ヶ月プラン", "6ヶ月プラン", "12ヶ月プラン"];
+                  return (
+                    <PlanForm
+                      key={field.id}
+                      form={form}
+                      index={index}
+                      planLabel={planLabels[index]}
+                    />
+                  );
+                })}
               </div>
-              
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="mt-4"
-                onClick={() => {
-                  append({
-                    price: 0,
-                    type: "subscription",
-                    interval: "month",
-                    interval_count: 3,
-                  });
-                }}
-                disabled={fields.length >= 3}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                プランを追加
-              </Button>
-              {fields.length >= 3 && (
-                <p className="text-xs text-muted-foreground mt-2">プランは最大3つまで追加できます</p>
-              )}
             </div>
             
             <div className="flex justify-end space-x-2">
