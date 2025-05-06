@@ -160,7 +160,7 @@ export function AddProductForm({ onSubmit, onCancel }: {
     },
   })
   
-  const { fields, append, remove } = useFieldArray({
+  const { fields } = useFieldArray({
     control: form.control,
     name: "plans",
   })
