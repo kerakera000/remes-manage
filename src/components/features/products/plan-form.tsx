@@ -25,6 +25,9 @@ export interface PlanFormProps {
       type: "subscription";
       interval: "month";
       interval_count: 3 | 6 | 12;
+      metadata: {
+        label: string;
+      };
     }[];
     mainImage?: string;
     subImages?: string[];
@@ -34,6 +37,10 @@ export interface PlanFormProps {
 }
 
 export function PlanForm({ form, index, planLabel }: PlanFormProps) {
+  // コンポーネントのマウント時にmetadataを設定
+  React.useEffect(() => {
+    form.setValue(`plans.${index}.metadata.label`, planLabel, { shouldValidate: true });
+  }, [form, index, planLabel]);
   
   return (
     <div className="border p-4 rounded-md mb-4 relative">      

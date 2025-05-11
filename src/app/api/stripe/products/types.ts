@@ -4,6 +4,9 @@ export interface PlanRequest {
   type: 'subscription'; // サブスクリプションのみに制限
   interval: 'month'; // 月単位のみに制限
   interval_count: 3 | 6 | 12; // 3, 6, 12ヶ月のみに制限
+  metadata?: {
+    label: string;
+  };
 }
 
 export interface CreateProductRequest {

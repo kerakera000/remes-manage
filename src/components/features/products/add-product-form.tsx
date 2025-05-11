@@ -32,6 +32,9 @@ const planSchema = z.object({
     z.literal(6),
     z.literal(12)
   ], { required_error: "サブスクリプション期間を選択してください" }),
+  metadata: z.object({
+    label: z.string()
+  })
 })
 
 const productFormSchema = z.object({
@@ -141,18 +144,27 @@ export function AddProductForm({ onSubmit, onCancel }: {
           type: "subscription",
           interval: "month",
           interval_count: 3,
+          metadata: {
+            label: "3ヶ月プラン"
+          }
         },
         {
           price: 0,
           type: "subscription",
           interval: "month",
           interval_count: 6,
+          metadata: {
+            label: "6ヶ月プラン"
+          }
         },
         {
           price: 0,
           type: "subscription",
           interval: "month",
           interval_count: 12,
+          metadata: {
+            label: "12ヶ月プラン"
+          }
         }
       ],
       mainImage: "",

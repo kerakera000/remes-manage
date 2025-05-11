@@ -103,12 +103,13 @@ export async function POST(request: Request) {
           product: product.id,
           unit_amount: plan.price,
           currency: 'jpy',
+          metadata: plan.metadata,
         };
         
         if (plan.type === 'subscription' && plan.interval) {
           priceData.recurring = {
             interval: plan.interval,
-            interval_count: plan.interval_count || 3,
+            interval_count: plan.interval_count,
           };
         }
         
@@ -126,7 +127,7 @@ export async function POST(request: Request) {
         unit_amount: price.unit_amount,
         recurring: {
           interval: price.recurring?.interval,
-          interval_count: price.recurring?.interval_count || 1,
+          interval_count: price.recurring?.interval_count,
         },
       })),
       images: product.images,
